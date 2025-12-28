@@ -1,0 +1,57 @@
+# ---------------------------------------
+# Python / Jupyter
+# ---------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+.ipynb_checkpoints/
+
+# ---------------------------------------
+# OS junk
+# ---------------------------------------
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------
+# Editor / IDE
+# ---------------------------------------
+.vscode/
+.idea/
+
+# ---------------------------------------
+# Temporary / runtime artifacts
+# (should never be committed)
+# ---------------------------------------
+*.log
+*.tmp
+*.bak
+*.swp
+
+# ---------------------------------------
+# Large data / derived products
+# (workflows only — no data here)
+# ---------------------------------------
+DATA/
+DATASET/
+Deliverables/
+work/
+SAFE/
+*.SAFE
+*.SAFE.zip
+*.zip
+
+# ---------------------------------------
+# SNAP / GDAL artifacts (never commit)
+# ---------------------------------------
+*.dim
+*.data/
+*.img
+*.hdr
+*.aux.xml
+*.ovr
+
+# ---------------------------------------
+# Local environment files
+# ---------------------------------------
+.env
+.env.*
