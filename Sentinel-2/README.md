@@ -1,4 +1,4 @@
-SENTINEL-2 SNAP-BASED PREPROCESSING WORKFLOW
+### SENTINEL-2 SNAP-BASED PREPROCESSING WORKFLOW
 
 ===========================================
 
@@ -48,13 +48,13 @@ This is a workflow, not a productized library.
 
 -----------------------------------------------------------------------
 
-SCOPE \& NON-GOALS
+## SCOPE \& NON-GOALS
 
 -----------------------------------------------------------------------
 
 
 
-IN SCOPE
+## IN SCOPE
 
 • Sentinel-2 L2A ingestion via SNAP GPT  
 
@@ -78,7 +78,7 @@ IN SCOPE
 
 
 
-OUT OF SCOPE
+## OUT OF SCOPE
 
 • Machine learning  
 
@@ -102,7 +102,7 @@ This workflow prepares data. Interpretation happens elsewhere.
 
 -----------------------------------------------------------------------
 
-SOFTWARE DEPENDENCIES
+## SOFTWARE DEPENDENCIES
 
 -----------------------------------------------------------------------
 
@@ -144,7 +144,7 @@ Not required
 
 -----------------------------------------------------------------------
 
-DATA ASSUMPTIONS
+## DATA ASSUMPTIONS
 
 -----------------------------------------------------------------------
 
@@ -170,7 +170,7 @@ DATA ASSUMPTIONS
 
 -----------------------------------------------------------------------
 
-NOTEBOOK STRUCTURE (BLOCK-BY-BLOCK)
+## NOTEBOOK STRUCTURE (BLOCK-BY-BLOCK)
 
 -----------------------------------------------------------------------
 
@@ -444,7 +444,7 @@ and minimal artifacts for publication or sharing.
 
 -----------------------------------------------------------------------
 
-WHAT THIS WORKFLOW IS (AND IS NOT)
+## WHAT THIS WORKFLOW IS (AND IS NOT)
 
 -----------------------------------------------------------------------
 
@@ -480,7 +480,7 @@ This workflow:
 
 -----------------------------------------------------------------------
 
-INTENDED USE
+## INTENDED USE
 
 -----------------------------------------------------------------------
 
@@ -502,7 +502,7 @@ INTENDED USE
 
 -----------------------------------------------------------------------
 
-FINAL NOTE
+## FINAL NOTE
 
 -----------------------------------------------------------------------
 
