@@ -516,7 +516,7 @@ If you need interpretation, that belongs in the paper.
 
 
 
-This repository stops exactly where responsible preprocessing should stop.
+This repository stops exactly where preprocessing should stop.
 
 
 
