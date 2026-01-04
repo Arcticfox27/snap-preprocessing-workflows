@@ -17,8 +17,8 @@ The implementation is intentionally kept explicit and editable, not wrapped as a
 
 This is a workflow, not a productized library.
 
-### SCOPE & NON-GOALS
-## IN SCOPE
+## SCOPE & NON-GOALS
+### IN SCOPE
 
 • Input ingestion from tile folders or .zip tile archives
 • SNAP GPT processing to produce:
@@ -37,7 +37,7 @@ This is a workflow, not a productized library.
 • Publication-ready file naming (João convention)
 • Publish-mode aware cleanup (dev vs release)
 
-## OUT OF SCOPE
+### OUT OF SCOPE
 
 • Machine learning / embeddings / PCA
 • Feature scaling or normalization
@@ -47,7 +47,7 @@ This is a workflow, not a productized library.
 
 This workflow prepares data. Interpretation happens elsewhere.
 
-## SOFTWARE DEPENDENCIES
+### SOFTWARE DEPENDENCIES
 
 Required
 • ESA SNAP (Desktop + GPT)
@@ -236,3 +236,4 @@ It produces tile-wide rasters. Any masking/clipping should happen downstream.
 • Consistent multi-year radar covariates for Iberian-wide analyses
 • Dataset preparation for integration with ALS/TLS/field plots
 • Reproducible RS workflow templates for future platforms (S1, NISAR)
+
