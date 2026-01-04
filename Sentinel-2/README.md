@@ -1,6 +1,4 @@
-### SENTINEL-2 SNAP-BASED PREPROCESSING WORKFLOW
-
-===========================================
+# SENTINEL-2 SNAP-BASED PREPROCESSING WORKFLOW
 
 This folder contains a fully reproducible, SNAP-based preprocessing
 workflow for Sentinel-2 Level-2A data, implemented as a Jupyter notebook.
