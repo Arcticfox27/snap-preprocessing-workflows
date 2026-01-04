@@ -28,31 +28,6 @@ This repository is designed around the following principles:
 
 ---
 
-## Repository Structure
-
-snap-preprocessing-workflows/
-│
-├── Sentinel-2/
-│ ├── README.md
-│ └── SNAP_S2_Preprocessing.ipynb
-│
-├── Sentinel-1/
-│ └── README.md
-│
-├── ALOS-2/
-│ └── README.md
-│
-├── LICENSE
-└── README.md
-
-
-
-Each sensor folder contains:
-- A **dedicated README** describing scope, assumptions, and outputs
-- One or more **Jupyter notebooks** implementing the workflow
-
----
-
 ## Intended Use
 
 This repository is intended for:
