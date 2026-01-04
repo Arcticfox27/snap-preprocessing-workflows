@@ -1,7 +1,5 @@
 ### ALOS-2 PALSAR-2 SNAP-BASED PREPROCESSING & PUBLISHING WORKFLOW
 
-===========================================
-
 This folder contains a fully reproducible, SNAP-based preprocessing
 and publishing workflow for ALOS-2 PALSAR-2 L-band SAR data.
 
@@ -299,3 +297,4 @@ If you need a model, apply it downstream.
 If you need interpretation, that belongs in the paper.
 
 This workflow stops exactly where preprocessing should stop.
+
