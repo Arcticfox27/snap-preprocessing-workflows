@@ -1,149 +1,158 @@
-### ALOS-2 PALSAR-2 SNAP-BASED PREPROCESSING WORKFLOW
+### ALOS-2 PALSAR-2 SNAP+GDAL PREPROCESSING WORKFLOW
 
-This folder contains a fully reproducible, SNAP-based preprocessing workflow for ALOS-2 PALSAR-2 StripMap (F02DAR) data, implemented as a Jupyter-style executable script.
+===========================================
 
-The workflow prepares analysis-ready radar backscatter and derived products for tile-based studies in Iberian peninsula, as part of the BLS–BIOMASS project.
+This folder contains a fully reproducible preprocessing workflow for ALOS-2 PALSAR-2 backscatter products, implemented as a Jupyter notebook–style script (explicit cells / explicit configuration), using ESA SNAP GPT for radar processing and GDAL for final reprojection + publication naming.
 
-The implementation is intentionally provided as an explicit, linear workflow rather than a packaged library.
+The workflow was developed to generate analysis-ready raster deliverables (raw backscatter, speckle-filtered backscatter, dB backscatter, polarization metrics, GLCM textures, and LIA) for study areas across the Iberian Peninsula, as part of the BLS–BIOMASS project.
 
-WHY THIS IS A WORKFLOW (NOT A LIBRARY)
+The implementation is intentionally kept explicit and editable, not wrapped as a package.
 
-• Radar preprocessing choices are study-specific
-• SNAP operator semantics matter and must remain visible
-• Backscatter definitions (Gamma⁰, Sigma⁰, Beta⁰) are explicit, not implicit
-• Assumptions must be auditable, not abstracted away
-• Reproducibility matters more than code reuse
+## Why a notebook-style workflow?
 
-This script documents what is done and in what order, not just how to run it.
+• Processing parameters differ across sites and years
+• SNAP operator behavior evolves (BandMaths, Collocate, Speckle-Filter, GLCM)
+• Assumptions must remain visible (band naming, nodata, resampling)
+• Reproducibility matters more than abstraction
 
-SCOPE & NON-GOALS
-IN SCOPE
+This is a workflow, not a productized library.
 
-• ALOS-2 PALSAR-2 StripMap (F02DAR) ingestion
-• Tile-wise processing (directory or zipped input)
-• Gamma⁰ backscatter renaming from source TIFs
-• Local Incidence Angle (LIA) handling (degrees → radians)
-• Collocation of HH, HV, and LIA
-• Computation of:
+### SCOPE & NON-GOALS
+## IN SCOPE
 
-Sigma⁰ (terrain-corrected)
+• Input ingestion from tile folders or .zip tile archives
+• SNAP GPT processing to produce:
+– Gamma0 HH/HV (renamed from band_1)
+– Local Incidence Angle (LIA) in degrees + radians
+– Collocation (HH + HV + LIA)
+– Sigma0 + Beta0 derived via BandMaths from collocated inputs
+– Band merge of 6 backscatter layers (Beta/Gamma/Sigma × HH/HV)
+– Speckle filtering (Lee) on merged stack
+– Renaming to _Spk convention
+– dB conversion from speckle-filtered backscatter
+– Polarization metrics (ratio + normalized difference) for Gamma0/Sigma0/Beta0
+– GLCM texture features from speckle-filtered stack
+• GeoTIFF export (band-wise or grouped, depending on config)
+• Final reprojection + nodata enforcement with GDAL
+• Publication-ready file naming (João convention)
+• Publish-mode aware cleanup (dev vs release)
 
-Beta⁰
-• Multi-band backscatter merging
-• Speckle filtering (Lee, fixed window)
-• dB conversion with explicit offset
-• Polarization metrics (ratio, ND)
-• GLCM texture features
-• Per-band GeoTIFF export
-• CRS reprojection and dataset flattening
-• Deterministic naming (João-conformant)
-• Publish-mode aware cleanup (DEV vs RELEASE)
+## OUT OF SCOPE
 
-OUT OF SCOPE
-
-• Radiometric terrain correction beyond LIA adjustment
-• Absolute calibration validation
+• Machine learning / embeddings / PCA
 • Feature scaling or normalization
-• PCA, embeddings, or feature learning
-• Machine learning or modeling
-• Ecological or structural interpretation
-• Statistical inference
+• Model training or inference
+• Statistical interpretation
+• Scientific claims about biomass, structure, disturbance, or ecology
 
-This workflow prepares inputs. Interpretation happens elsewhere.
+This workflow prepares data. Interpretation happens elsewhere.
 
-SOFTWARE DEPENDENCIES
+## SOFTWARE DEPENDENCIES
+
 Required
-
 • ESA SNAP (Desktop + GPT)
-• GDAL (CLI tools: gdalwarp)
+• GDAL CLI tools (at least gdalwarp)
 • Python ≥ 3.9
 
 Python packages
-
 • numpy
 • rasterio
-• zipfile
-• xml.etree
-• hashlib
+• lxml or xml.etree.ElementTree (used for .dim parsing)
 
-Not required
+Optional / situational
+• geopandas (only if you add AOI clipping later)
 
-• pandas
-• scikit-learn
-• xarray
-• any ML frameworks
+## DATA ASSUMPTIONS
 
-DATA ASSUMPTIONS
+Input data
+• Tile-based ALOS-2 products containing at least:
+– *_sl_HH_F02DAR.tif
+– *_sl_HV_F02DAR.tif
+– *_linci_F02DAR.tif
 
-• Input data:
+Tile entry formats supported
+• Folder containing the above TIFs
+• .zip archive containing the above TIFs
 
-Folder with GeoTIFFs, or
+Year and tile parsing
+• The script derives:
+– tile_code from N\d{2}[EW]\d{3} (e.g., N40W001)
+– year_token from _YY_ (e.g., _21_) or _YYYY patterns
+– tile_id = <tile_code>_<YYYY>
 
-Single .zip tile archive
-• Required bands per tile:
+CRS targets (Iberian Peninsula)
+• Spain / Aragon: EPSG:25830 (ETRS89 / UTM zone 30N)
+• Portugal: EPSG:3763 (ETRS89 / Portugal TM06)
 
-HH backscatter
+You must set TARGET_CRS appropriately per study area/run.
 
-HV backscatter
+## OUTPUT STRUCTURE
 
-Incidence angle raster
-• Tile naming contains:
+The workflow produces three “layers” of outputs:
 
-Tile code (e.g. N40W001)
+1) SNAP working products
 
-Year (2- or 4-digit, parsed automatically)
-• Target CRS:
+Outputs/<tile_id>/*.dim and companion .data/ folders
+These are the intermediate SNAP products for reproducibility and debugging.
 
-Spain: EPSG:25830
-• Processing is tile-isolated:
+2) Export staging products
 
-No cross-tile mosaicking
+Exports/<Group>/<tile_id>/*.tif
+These are SNAP-exported GeoTIFFs (usually per-band to keep files manageable).
 
-No temporal aggregation
+Groups include:
+• Raw_Backscatter
+• Speckle_Filtered
+• dB_Backscatter
+• Polarization_metrics
+• GLCM
+• LIA
 
-WORKFLOW STRUCTURE (LOGICAL STAGES)
-STAGE 0 — GLOBAL CONFIGURATION
+3) Final published deliverables (naming + CRS enforced)
+
+Exports/<tile_id>/<Group>/<StudyArea>_<YYYY0000>_<Platform>_<Variable>_<TileCode>.tif
+
+Example:
+ARAGON_20220000_ALOS2_BETAHH_N40W001.tif
+stored under:
+Exports/N40W001_2022/Raw_Backscatter/
+
+WORKFLOW STRUCTURE (STAGE-BY-STAGE)
+STAGE 0 — GLOBAL CONFIG
 
 Defines:
+• Study area name and platform token (João convention)
+• Target CRS (EPSG:25830 for Spain; EPSG:3763 for Portugal)
+• Input root, output root, export root
+• Publish mode (dev/release)
+• Caching behavior (.done stamps)
 
-• Study area name
-• Platform code
-• CRS
-• SNAP GPT path
-• XML graph directory
-• Output and export roots
-• Publish mode (DEV / RELEASE)
+This is the only block that must be edited for a new study area.
 
-This is the only section intended for routine edits.
+## STAGE 1 — INPUT DISCOVERY & VALIDATION
 
-STAGE 1 — INPUT VERIFICATION & INGESTION
+For each tile entry (folder or .zip):
+• Finds HH/HV/incidence files by suffix
+• Validates raster readability and prints shapes
+• If zipped: extracts required TIFs to a local _unzipped/ cache for SNAP compatibility
 
-• Accepts directory or .zip tiles
-• Verifies presence of required HH, HV, and LIA files
-• Uses /vsizip/ only for inspection
-• Materializes TIFs to disk for SNAP compatibility
+## STAGE 2 — SNAP GPT PROCESSING CHAIN (ORDERED)
 
-No processing occurs here — only validation.
+Runs a fixed deterministic chain:
 
-STAGE 2 — CORE BACKSCATTER PROCESSING (SNAP)
-
-Using SNAP GPT graphs:
-
-Rename raw Gamma⁰ bands
-
-Rename LIA (degrees)
+Rename Gamma0 HH/HV + LIA degrees
 
 Convert LIA degrees → radians
 
-Collocate HH, HV, and LIA
+Collocate HH/HV/LIA
 
-Compute Sigma⁰ and Beta⁰
+Derive Sigma0 and Beta0 (BandMaths)
 
-Merge Gamma⁰, Sigma⁰, Beta⁰ (HH/HV)
+Merge 6 backscatter bands
 
-Apply speckle filtering
+Speckle filter merged stack
 
-Rename speckle bands
+Rename _Spk bands
 
 Convert to dB
 
@@ -151,81 +160,79 @@ Compute polarization metrics
 
 Compute GLCM textures
 
-All intermediate products are written as SNAP .dim + .data.
+All products are written into:
+Outputs/<tile_id>/
 
-STAGE 3 — PER-BAND EXPORT (SNAP)
+## STAGE 3 — SNAP EXPORT TO GEOTIFF (STAGING)
 
-• All groups exported band-by-band
-• No large multiband GeoTIFFs produced prematurely
-• NaNs explicitly replaced with NoData (-9999)
-• Outputs written to:
+Exports products into per-tile group folders:
+Exports/<Group>/<tile_id>/
 
-Exports/<Group>/<TileID>/
+Per-band export is preferred for large products and for consistent downstream reprojection.
 
+## STAGE 4 — FINAL GDAL PUBLISH (CRS + NAMING)
 
-This ensures transparency and avoids hidden band order assumptions.
+Uses gdalwarp to:
+• Reproject every exported GeoTIFF into TARGET_CRS
+• Enforce nodata = -9999 (srcnodata + dstnodata)
+• Apply variable-appropriate resampling:
+– near for GLCM and Polarization_metrics
+– bilinear for continuous backscatter / LIA
 
-STAGE 4 — DATASET FLATTENING & REPROJECTION (GDAL)
+Outputs are written into group-specific subfolders under the tile folder to prevent collisions:
+Exports/<tile_id>/<Group>/...
 
-• Each per-band GeoTIFF is:
+## STAGE 5 — CLEANUP (PUBLISH MODE)
 
-Reprojected to target CRS
+The workflow supports two modes:
 
-Assigned variable-appropriate resampling
-• Final deliverables written to:
+dev
+• Keep .dim products and stamps
+• Keep staging exports
+• Best for iteration, debugging, parameter changes
 
-Exports/<TileID>/<Group>/
-  <STUDY>_<YYYY0000>_<PLATFORM>_<VARIABLE>_<TILE>.tif
+release
+• Delete SNAP .dim and .data intermediates after export
+• Optionally delete stamps (to avoid shipping cache metadata)
+• Retains only final deliverables under Exports/<tile_id>/...
 
+Note: in your current script, stamp deletion is scoped to the published tile subtree for safety.
 
-Group-specific folders prevent variable collisions
-(e.g. raw vs speckle-filtered backscatter).
+## WHAT TO BE MINDFUL OF
 
-STAGE 5 — PUBLISH-MODE AWARE CLEANUP
+• TARGET_CRS must match the study area.
+– Spain: EPSG:25830
+– Portugal: EPSG:3763
 
-Modes:
+• Year parsing depends on filename conventions.
+If tile naming changes, update parse_year_and_tile_code() first.
 
-• DEV
+• Band naming is assumed by the BandMaths expressions.
+Sigma0/Beta0 graphs reference specific band IDs created by earlier steps.
+If SNAP changes band naming or collocation suffixes, those expressions may need adjustment.
 
-Keep all .dim products
+• Speckle filter parameters are hard-coded.
+If you change the filter type or size, it should be treated as a “new pipeline version”
+(and cached outputs should be invalidated).
 
-Keep per-group exports
+• Caching uses sidecar .done stamps.
+They accelerate reruns but can hide changes if you manually alter files.
+For a clean rerun, delete relevant outputs (or disable caching).
 
-Keep cache stamps
+• Zipped tile inputs are extracted to _unzipped/.
+That folder can grow large over time; safe to delete when you no longer need reruns.
 
-• RELEASE
+• NoData handling:
+Final gdalwarp sets nodata to -9999, but internal SNAP products may still contain NaNs.
+The export graph for single-band includes a NaN→-9999 substitution.
 
-Keep only final GeoTIFF deliverables
+• This workflow does not clip to AOIs by default.
+It produces tile-wide rasters. Any masking/clipping should happen downstream.
 
-Remove .dim and .data
+## INTENDED USE
 
-Remove cache stamps
-
-This allows full traceability during development and clean delivery for sharing.
-
-WHAT TO BE MINDFUL OF
-
-• This workflow assumes correct upstream calibration of ALOS-2 inputs
-• Sigma⁰ and Beta⁰ formulations depend on LIA quality
-• Speckle filtering parameters are fixed and not adaptive
-• GLCM features are sensitive to NoData handling
-• Tile naming must contain year information
-• The script is designed for sequential tile processing, not parallel execution
-
-INTENDED USE
-
-• Biomass and structure modeling (downstream)
-• Radar-optical feature fusion
-• Fire and disturbance studies
-• Dataset preparation for ML pipelines
-• Teaching transparent SAR preprocessing
-
-FINAL NOTE
-
-This workflow is explicit by design.
-
-If you need abstraction, build on top of it.
-If you need models, apply them downstream.
-If you need interpretation, that belongs in the paper.
-
-This pipeline stops exactly where preprocessing should stop.
+• Radar preprocessing for biomass/structure modeling (external)
+• Feature generation for ML pipelines (external)
+• Consistent multi-year radar covariates for Iberian-wide analyses
+• Dataset preparation for integration with ALS/TLS/field plots
+• Reproducible RS workflow templates for future platforms (S1, NISAR)
