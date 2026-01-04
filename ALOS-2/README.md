@@ -1,6 +1,4 @@
-### ALOS-2 PALSAR-2 SNAP+GDAL PREPROCESSING WORKFLOW
-
-===========================================
+# ALOS-2 PALSAR-2 SNAP+GDAL PREPROCESSING WORKFLOW
 
 This folder contains a fully reproducible preprocessing workflow for ALOS-2 PALSAR-2 backscatter products, implemented as a Jupyter notebook–style script (explicit cells / explicit configuration), using ESA SNAP GPT for radar processing and GDAL for final reprojection + publication naming.
 
@@ -237,3 +235,19 @@ It produces tile-wide rasters. Any masking/clipping should happen downstream.
 • Dataset preparation for integration with ALS/TLS/field plots
 • Reproducible RS workflow templates for future platforms (S1, NISAR)
 
+# FINAL NOTE
+
+This repository stops exactly where preprocessing should stop:
+
+✓ Transparent
+✓ Reproducible
+✓ Editable
+✓ Operator-aware (SNAP semantics are explicit)
+✓ Produces publishable, analysis-ready rasters
+
+✗ Not a model
+✗ Not an interpretation layer
+✗ Not a feature-ranking system
+
+If you need modeling, do it downstream.
+If you need interpretation, that belongs in the paper.
