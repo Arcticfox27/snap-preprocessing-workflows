@@ -1,289 +1,116 @@
-### SENTINEL-2 SNAP-BASED PREPROCESSING WORKFLOW
+# SNAP Preprocessing Workflows
 
-===========================================
+This repository contains **reproducible, SNAP-based remote sensing preprocessing workflows** implemented as **Jupyter notebooks**.
 
-This folder contains a fully reproducible, SNAP-based preprocessing
-workflow for Sentinel-2 Level-2A data, implemented as a Jupyter notebook.
+The focus of this repository is **transparent, auditable preprocessing pipelines**, not packaged software.  
+All workflows are intentionally published as notebooks to preserve **epistemic openness**: parameters, design decisions, and processing boundaries remain visible and modifiable by downstream users.
 
-The workflow was developed to prepare analysis-ready raster datasets
-(reflectance, biophysical variables, textures) for study plots across
-the Iberian Peninsula, as part of the BLS–BIOMASS project.
+---
 
-The implementation is intentionally provided as an explicit notebook,
-not as a Python package.
+## Scope and Philosophy
 
+This repository is designed around the following principles:
 
-Why a notebook?
----------------
+- **Workflow over package**  
+  These are not Python packages or command-line tools. They are documented, executable workflows meant to be read, inspected, adapted, and extended.
 
-• Processing parameters differ across studies and sites
-• SNAP operators evolve (e.g. BiophysicalOp, GLCM, Collocate)
-• Assumptions must remain visible and editable
-• Reproducibility matters more than abstraction
+- **SNAP as the processing backbone**  
+  All preprocessing relies on ESA SNAP operators executed via `gpt`, with XML graphs generated programmatically where needed.
 
-This is a workflow, not a productized library.
+- **Reproducibility without abstraction loss**  
+  The notebooks expose all relevant parameters (resampling, compositing logic, masking rules, texture settings, etc.) instead of hiding them behind APIs.
 
+- **Sensor-specific separation**  
+  Each sensor has its own folder and documentation. No attempt is made to force a unified abstraction across fundamentally different data products.
 
------------------------------------------------------------------------
-SCOPE & NON-GOALS
------------------------------------------------------------------------
+- **Publication-grade restraint**  
+  These workflows stop at *preprocessing*. No modeling, attribution, or inference is embedded here.
 
-IN SCOPE
+---
 
-• Sentinel-2 L2A ingestion via SNAP GPT
-• Surface reflectance extraction and resampling
-• Scene Classification Layer (SCL) handling
-• Biophysical variables (LAI, FAPAR, FCOVER, Cab, Cw)
-• Cloud-masked temporal compositing
-• Texture feature extraction (GLCM)
-• Export to GeoTIFF
-• Dataset flattening (band-wise products)
-• Quality accounting (SCL class tallies)
-• Reproducible cleanup policies
+## Repository Structure
 
-OUT OF SCOPE
+snap-preprocessing-workflows/
+│
+├── Sentinel-2/
+│ ├── README.md
+│ └── SNAP_S2_Preprocessing.ipynb
+│
+├── Sentinel-1/
+│ └── README.md
+│
+├── ALOS-2/
+│ └── README.md
+│
+├── LICENSE
+└── README.md
 
-• Machine learning
-• PCA, embeddings, or feature engineering
-• Feature scaling or normalization
-• Model training or inference
-• Statistical interpretation
-• Scientific claims about vegetation or disturbance
 
-This workflow prepares data. Interpretation happens elsewhere.
 
+Each sensor folder contains:
+- A **dedicated README** describing scope, assumptions, and outputs
+- One or more **Jupyter notebooks** implementing the workflow
 
------------------------------------------------------------------------
-SOFTWARE DEPENDENCIES
------------------------------------------------------------------------
+---
 
-Required
+## Intended Use
 
-• ESA SNAP (Desktop + GPT)
-• GDAL (CLI tools: gdal_translate, gdalwarp)
-• Python ≥ 3.9
+This repository is intended for:
 
-Python packages
+- Researchers who need **transparent SNAP preprocessing** rather than black-box tools
+- Projects where **parameter traceability** matters
+- Workflows that may later be extended to new sensors (e.g. NISAR) without rewriting the conceptual pipeline
+- Users comfortable with adapting notebooks to their own study areas, projections, and resolutions
 
-• numpy
-• rasterio
-• geopandas (only if AOI clipping is enabled)
+It is **not** intended to be:
+- A one-click processing tool
+- A general remote sensing library
+- A production data service
 
-Not required
+---
 
-• scikit-learn
-• pandas
-• xarray
-• any machine learning frameworks
+## Computational Environment
 
+The workflows assume:
 
------------------------------------------------------------------------
-DATA ASSUMPTIONS
------------------------------------------------------------------------
+- ESA SNAP installed and accessible via `gpt`
+- Python environment capable of running Jupyter notebooks
+- Sufficient disk space for intermediate SNAP products
+- Familiarity with SNAP operators and remote sensing preprocessing concepts
 
-• Input data: Sentinel-2 L2A SAFE folders or SAFE.zip
-• CRS:
-  – Portugal: EPSG:3763
-  – Spain:    EPSG:25830
-• Target resolution: 25 m
-• Tile-based processing (one tile per run)
-• Scene-wise processing followed by temporal aggregation
+Exact environment requirements are documented **inside each sensor-specific folder**.
 
+---
 
------------------------------------------------------------------------
-NOTEBOOK STRUCTURE (BLOCK-BY-BLOCK)
------------------------------------------------------------------------
+## Provenance and Use Context
 
-CELL 0 — GLOBAL CONFIG
----------------------
+These workflows were developed and validated while preprocessing satellite data for **study plots across the Iberian Peninsula**, as part of a larger biomass-mapping research effort.
 
-Defines:
+They are published here as **generalizable preprocessing references**, not as project-specific artifacts.
 
-• Study area (PLOT)
-• Tile ID
-• Year
-• Input roots (SAFE / zipped SAFE)
-• CRS and resolution
-• Orbit filtering (optional)
-• Naming conventions
-• Publishing mode (dev / release)
+---
 
-This is the only cell that must be edited to change study area.
+## License
 
+This repository is released under the **MIT License**.
 
-CELL 1 — SENTINEL-2 INGESTION & SPLITTING
-----------------------------------------
+You are free to:
+- Use
+- Modify
+- Adapt
+- Extend
 
-Uses SNAP GPT to:
+with appropriate attribution.
 
-• Read SAFE / SAFE.zip
-• Extract:
-  – Surface reflectance bands
-  – Biophysical variables
-  – Scene Classification Layer (SCL)
-• Resample all outputs to the target resolution
-• Write one SNAP .dim product per scene per category
+---
 
-Outputs (under work/<PLOT>/<TILE>/):
+## Notes on Extension
 
-• REF25/*.dim
-• BIO25/*.dim
-• SCL25/*.dim
+The structure of this repository is intentionally conservative.  
+If SNAP support or community tooling evolves (e.g. future sensors or operators), these notebooks are designed to be **extended**, not replaced.
 
-No GeoTIFF export occurs at this stage.
+---
 
 
-CELL 2 — BIOPHYSICAL TEMPORAL COMPOSITE
---------------------------------------
 
-• Reads all per-scene BIO .dim products
-• Standardizes band naming
-• Averages valid observations across time
-• Produces a 5-band temporal composite:
-  LAI, FAPAR, FCOVER, Cab, Cw
 
-Output:
-
-• BIO temporal composite (.dim)
-• Optional GeoTIFF export
-
-
-CELL 3 — COLLOCATION (REF + SCL STACK)
---------------------------------------
-
-• Merges reflectance and SCL per date
-• Collocates all dates into a single stack
-• Ensures SCL masks travel with reflectance
-
-This step guarantees explicit temporal masking
-and controlled resampling behavior.
-
-
-CELL 4 — TEMPORAL COMPOSITE (REFLECTANCE)
------------------------------------------
-
-• Applies SCL-based masking
-• Computes per-band temporal means
-• Produces a 12-band reflectance composite
-
-Output:
-
-• COMPOSITE25/*_REF25_TC.dim
-
-
-CELL 5 — GLCM TEXTURE FEATURES
-------------------------------
-
-• Computes texture metrics on the reflectance composite
-• One GLCM run per band
-• Metrics include:
-  Contrast, Dissimilarity, Homogeneity, ASM,
-  Energy, MAX, Entropy, Mean, Variance, Correlation
-
-Output:
-
-• GLCM25/*.dim
-
-
-CELL 6 — EXPORT & DOCUMENTATION
--------------------------------
-
-• Converts selected .dim products to GeoTIFF
-• Generates README_bandmap.txt
-• Uses a dim-first policy (no TIFF metadata reads)
-
-Deliverables created:
-
-• S2TC/*.tif
-• BIO/*.tif
-• GLCM/*.tif
-• DATASET/README_bandmap.txt
-
-
-CELL 7 — QUALITY ASSURANCE (SCL TALLY)
--------------------------------------
-
-• Reads SCL rasters directly (.img)
-• Computes per-scene and aggregated class fractions
-• Reports:
-  – cloud fraction
-  – masked fraction
-  – dark pixel fraction
-
-Deliverable:
-
-• QA/*_SCL_TALLY_*.csv
-
-This block provides transparency, not filtering.
-
-
-CELL 8 — DATASET BUILDER (FLATTENING)
-------------------------------------
-
-• Splits multiband GeoTIFFs into band-wise files
-• Reprojects with GDAL
-• Applies variable-appropriate resampling
-• Produces one file per variable
-
-Final structure:
-
-Deliverables/<REGION>/<TILE>/DATASET/
-  ├─ <Study>_<Year>_S2_<VAR>_<TILE>.tif
-  ├─ inventory CSV
-  └─ README_bandmap.txt
-
-
-CELL 9 — CLEANUP (PUBLISH-MODE AWARE)
-------------------------------------
-
-Cleans intermediates and optionally prunes deliverables.
-
-Modes:
-
-• dev     → keep all intermediates
-• release → keep only DATASET + QA + README
-
-This ensures reproducibility during development
-and minimal artifacts for publication or sharing.
-
-
------------------------------------------------------------------------
-WHAT THIS WORKFLOW IS (AND IS NOT)
------------------------------------------------------------------------
-
-This workflow:
-
-✓ Is transparent
-✓ Is reproducible
-✓ Is editable
-✓ Respects SNAP operator semantics
-✓ Produces analysis-ready datasets
-
-This workflow:
-
-✗ Is not a model
-✗ Does not infer ecology
-✗ Does not rank features
-✗ Does not hide assumptions
-
-
------------------------------------------------------------------------
-INTENDED USE
------------------------------------------------------------------------
-
-• Remote sensing preprocessing
-• Biomass or structure modeling (external)
-• Fire, drought, or land-cover studies
-• Dataset preparation for ML pipelines
-• Teaching reproducible RS workflows
-
-
------------------------------------------------------------------------
-FINAL NOTE
------------------------------------------------------------------------
-
-If you need a package, build one on top of this.
-If you need a model, apply it downstream.
-If you need interpretation, that belongs in the paper.
-
-This repository stops exactly where preprocessing should stop.
