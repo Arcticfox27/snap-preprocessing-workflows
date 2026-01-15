@@ -153,8 +153,10 @@ This guarantees reproducibility.
 
 ## Output structure
 
-After processing, outputs are written to: Exports/SingleBands/
-Each variable is exported as an individual GeoTIFF: <Study><Year>S1GRD<Variable><Tile>.tif
+After processing, outputs are written to:
+Exports/SingleBands/
+Each variable is exported as an individual GeoTIFF: 
+"<Study><Year>S1GRD<Variable><Tile>.tif"
 
 Examples:
 Monsanto_20200000_S1GRD_GAMMA0VH_A.tif
@@ -208,6 +210,7 @@ If you need a model, apply it downstream.
 If you need interpretation, that belongs in the paper.
 
 This repository stops exactly where responsible radar preprocessing should stop.
+
 
 
 
