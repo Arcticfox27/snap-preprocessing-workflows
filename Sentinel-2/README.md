@@ -284,4 +284,3 @@ If you need a package, build one on top of this.
 If you need a model, apply it downstream.
 If you need interpretation, that belongs in the paper.
 
-This repository stops exactly where preprocessing should stop.
