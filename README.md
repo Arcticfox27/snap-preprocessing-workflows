@@ -59,7 +59,7 @@ Exact environment requirements are documented **inside each sensor-specific fold
 
 ## Provenance and Use Context
 
-These workflows were developed and validated while preprocessing satellite data for **study plots across the Iberian Peninsula**, as part of a larger biomass-mapping research effort.
+These workflows were developed and validated while preprocessing satellite data for **study plots across the Iberian Peninsula**, as part of a project: **Below,Litter & Shrub BIOMASS density mapping combining optical, LiDAR and SAR Earth Observation data (BLS-BIOMASS)** by **Instituto Superior de Agronomia, Universidade de Lisboa, Portugal.** 
 
 They are published here as **generalizable preprocessing references**, not as project-specific artifacts.
 
