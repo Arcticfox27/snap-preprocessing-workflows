@@ -49,7 +49,7 @@ It is **not** intended to be:
 The workflows assume:
 
 - ESA SNAP installed and accessible via `gpt`
-- Python environment capable of running Jupyter notebooks
+- Python environment capable of running Jupyter notebooks + GDAL
 - Sufficient disk space for intermediate SNAP products
 - Familiarity with SNAP operators and remote sensing preprocessing concepts
 
