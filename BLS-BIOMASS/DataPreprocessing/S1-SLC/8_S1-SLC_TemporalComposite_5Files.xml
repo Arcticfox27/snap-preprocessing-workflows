@@ -1,0 +1,180 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_1}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,5339,7700</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_2}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,5339,7700</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="Read(3)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_3}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,5339,7700</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="Read(4)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_4}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,5339,7700</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="Read(5)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_5}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,5339,7700</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="Collocate">
+    <operator>Collocate</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+      <sourceProduct.2 refid="Read(3)"/>
+      <sourceProduct.3 refid="Read(4)"/>
+      <sourceProduct.4 refid="Read(5)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceProductPaths/>
+      <referenceProductName>${Reference}</referenceProductName>
+      <targetProductName>_collocated</targetProductName>
+      <targetProductType>COLLOCATED</targetProductType>
+      <copySecondaryMetadata>true</copySecondaryMetadata>
+      <renameReferenceComponents>true</renameReferenceComponents>
+      <renameSecondaryComponents>true</renameSecondaryComponents>
+      <referenceComponentPattern>${ORIGINAL_NAME}_0</referenceComponentPattern>
+      <secondaryComponentPattern>${ORIGINAL_NAME}_${SLAVE_NUMBER_ID}</secondaryComponentPattern>
+      <resamplingType>BICUBIC_CONVOLUTION</resamplingType>
+    </parameters>
+  </node>
+  <node id="BandMaths">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Collocate"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>${Band_Name_1}</name>
+          <type>float32</type>
+          <expression>${Coh_Composite}</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="BandMaths(2)">
+    <operator>BandMaths</operator>
+    <sources>
+      <sourceProduct refid="Collocate"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <targetBands>
+        <targetBand>
+          <name>${Band_Name_2}</name>
+          <type>float32</type>
+          <expression>${Unw_Composite}</expression>
+          <description/>
+          <unit/>
+          <noDataValue>0.0</noDataValue>
+        </targetBand>
+      </targetBands>
+      <variables/>
+    </parameters>
+  </node>
+  <node id="BandMerge">
+    <operator>BandMerge</operator>
+    <sources>
+      <sourceProduct refid="BandMaths"/>
+      <sourceProduct.1 refid="BandMaths(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <geographicError>1.0E-5</geographicError>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="BandMerge"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>${Output}</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+      <displayPosition x="24.0" y="34.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="24.0" y="81.0"/>
+    </node>
+    <node id="Read(3)">
+      <displayPosition x="27.0" y="129.0"/>
+    </node>
+    <node id="Read(4)">
+      <displayPosition x="25.0" y="180.0"/>
+    </node>
+    <node id="Read(5)">
+      <displayPosition x="26.0" y="228.0"/>
+    </node>
+    <node id="Read(6)">
+      <displayPosition x="25.0" y="278.0"/>
+    </node>
+    <node id="Collocate">
+      <displayPosition x="135.0" y="161.0"/>
+    </node>
+    <node id="BandMaths">
+      <displayPosition x="234.0" y="99.0"/>
+    </node>
+    <node id="BandMaths(2)">
+      <displayPosition x="230.0" y="187.0"/>
+    </node>
+    <node id="BandMerge">
+      <displayPosition x="368.0" y="156.0"/>
+    </node>
+    <node id="Write">
+      <displayPosition x="480.0" y="157.0"/>
+    </node>
+  </applicationData>
+</graph>

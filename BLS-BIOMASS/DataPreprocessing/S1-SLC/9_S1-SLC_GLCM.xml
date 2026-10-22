@@ -1,0 +1,105 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_1}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,5339,7700</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="Read(2)">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_2}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,5339,7700</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="BandMerge">
+    <operator>BandMerge</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+      <sourceProduct.1 refid="Read(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <geographicError>1.0E-5</geographicError>
+    </parameters>
+  </node>
+  <node id="GLCM">
+    <operator>GLCM</operator>
+    <sources>
+      <sourceProduct refid="BandMerge"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands>Coh_VH,Coh_VV</sourceBands>
+      <windowSizeStr>5x5</windowSizeStr>
+      <angleStr>ALL</angleStr>
+      <quantizerStr>Probabilistic Quantizer</quantizerStr>
+      <quantizationLevelsStr>64</quantizationLevelsStr>
+      <displacement>1</displacement>
+      <noDataValue>NaN</noDataValue>
+      <outputContrast>true</outputContrast>
+      <outputDissimilarity>true</outputDissimilarity>
+      <outputHomogeneity>true</outputHomogeneity>
+      <outputASM>true</outputASM>
+      <outputEnergy>true</outputEnergy>
+      <outputMAX>true</outputMAX>
+      <outputEntropy>true</outputEntropy>
+      <outputMean>true</outputMean>
+      <outputVariance>true</outputVariance>
+      <outputCorrelation>true</outputCorrelation>
+    </parameters>
+  </node>
+  <node id="BandMerge(2)">
+    <operator>BandMerge</operator>
+    <sources>
+      <sourceProduct refid="BandMerge"/>
+      <sourceProduct.1 refid="GLCM"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands/>
+      <geographicError>1.0E-5</geographicError>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="BandMerge(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>${Output}</file>
+      <formatName>GeoTIFF</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="29.0" y="71.0"/>
+    </node>
+    <node id="Read(2)">
+      <displayPosition x="32.0" y="185.0"/>
+    </node>
+    <node id="BandMerge">
+      <displayPosition x="25.0" y="129.0"/>
+    </node>
+    <node id="GLCM">
+      <displayPosition x="155.0" y="68.0"/>
+    </node>
+    <node id="BandMerge(2)">
+      <displayPosition x="143.0" y="130.0"/>
+    </node>
+    <node id="Write">
+            <displayPosition x="270.0" y="130.0"/>
+    </node>
+  </applicationData>
+</graph>

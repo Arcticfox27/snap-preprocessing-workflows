@@ -1,0 +1,92 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="Read">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_1}</file>
+      <formatName>BEAM-DIMAP</formatName>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,4303,6114</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="Subset">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands>${Subset_VH}</sourceBands>
+      <tiePointGrids/>
+      <region>0,0,4303,6115</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <vectorFile/>
+      <polygonRegion/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Subset(2)">
+    <operator>Subset</operator>
+    <sources>
+      <sourceProduct refid="Read"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <sourceBands>${Subset_VV}</sourceBands>
+      <tiePointGrids/>
+      <region>0,0,4303,6115</region>
+      <referenceBand/>
+      <geoRegion/>
+      <subSamplingX>1</subSamplingX>
+      <subSamplingY>1</subSamplingY>
+      <fullSwath>false</fullSwath>
+      <vectorFile/>
+      <polygonRegion/>
+      <copyMetadata>true</copyMetadata>
+    </parameters>
+  </node>
+  <node id="Write(2)">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset(2)"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>${Output_Path_VV}</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <node id="Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="Subset"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>${Output_Path_VH}</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="Read">
+            <displayPosition x="37.0" y="134.0"/>
+    </node>
+    <node id="Subset">
+      <displayPosition x="176.0" y="76.0"/>
+    </node>
+    <node id="Subset(2)">
+      <displayPosition x="176.0" y="174.0"/>
+    </node>
+    <node id="Write(2)">
+      <displayPosition x="274.0" y="174.0"/>
+    </node>
+    <node id="Write">
+            <displayPosition x="263.0" y="77.0"/>
+    </node>
+  </applicationData>
+</graph>

@@ -1,0 +1,62 @@
+<graph id="Graph">
+  <version>1.0</version>
+  <node id="1-Read-Phase">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_1}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,4225,6114</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="2-Read-Unwrapped-Phase">
+    <operator>Read</operator>
+    <sources/>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <useAdvancedOptions>false</useAdvancedOptions>
+      <file>${Input_2}</file>
+      <copyMetadata>true</copyMetadata>
+      <bandNames/>
+      <pixelRegion>0,0,4226,6115</pixelRegion>
+      <maskNames/>
+    </parameters>
+  </node>
+  <node id="3-SnaphuImport">
+    <operator>SnaphuImport</operator>
+    <sources>
+      <sourceProduct refid="1-Read-Phase"/>
+      <sourceProduct.1 refid="2-Read-Unwrapped-Phase"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <doNotKeepWrapped>false</doNotKeepWrapped>
+    </parameters>
+  </node>
+  <node id="4-Write">
+    <operator>Write</operator>
+    <sources>
+      <sourceProduct refid="3-SnaphuImport"/>
+    </sources>
+    <parameters class="com.bc.ceres.binding.dom.XppDomElement">
+      <file>${Output}</file>
+      <formatName>BEAM-DIMAP</formatName>
+    </parameters>
+  </node>
+  <applicationData id="Presentation">
+    <Description/>
+    <node id="1-Read-Phase">
+            <displayPosition x="55.0" y="82.0"/>
+    </node>
+    <node id="2-Read-Unwrapped-Phase">
+            <displayPosition x="57.0" y="185.0"/>
+    </node>
+    <node id="3-SnaphuImport">
+            <displayPosition x="217.0" y="131.0"/>
+    </node>
+    <node id="4-Write">
+            <displayPosition x="401.0" y="131.0"/>
+    </node>
+  </applicationData>
+</graph>
